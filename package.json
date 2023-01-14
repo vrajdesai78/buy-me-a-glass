@@ -1,0 +1,40 @@
+{
+  "name": "buy-me-a-candy",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.0.13",
+    "@chakra-ui/react": "^2.4.3",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@solana/wallet-adapter-react": "^0.15.24",
+    "@solana/wallet-adapter-react-ui": "^0.9.22",
+    "@solana/wallet-adapter-wallets": "^0.19.5",
+    "@solana/web3.js": "^1.70.0",
+    "@thirdweb-dev/react": "^3",
+    "@thirdweb-dev/sdk": "^3",
+    "framer-motion": "^7.6.19",
+    "fs": "^0.0.1-security",
+    "ipfs-http-client": "^59.0.0",
+    "next": "^13",
+    "react": "^18.2",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.40.0",
+    "react-icons": "^4.7.1",
+    "react-particles": "^2.6.0",
+    "web3.storage": "^4.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.11",
+    "@types/react": "^18.0.25",
+    "eslint": "^8.28.0",
+    "eslint-config-next": "^13.0.4",
+    "typescript": "^4.9.3"
+  }
+}

@@ -14,7 +14,7 @@ Install Node.js and npm. You can download Node.js from [here](https://nodejs.org
 Clone the repository and install the dependencies.
 
     git clone https://github.com/vrajdesai78/buy-me-a-glass
-    cd buy-me-a-candy
+    cd buy-me-a-glass
 
 Install the dependencies.
 

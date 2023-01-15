@@ -37,7 +37,7 @@ export const getServerSideProps = async (context: any) => {
   try {
     const sdk = ThirdwebSDK.fromPrivateKey("devnet", process.env.PRIVATE_KEY!);
     const program = await sdk.getProgram(
-      "71ovBV2UHvEb5WStZU5mSvj4FjbYrSvGWz25wL1jQ1fa",
+      "HjyuCUSUZ2VGkDJNw9QpJMXgNVfRJeaU5QFwyiLGZdpB",
       "nft-collection"
     );
     const nfts = await program.getAll();

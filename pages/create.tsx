@@ -90,13 +90,13 @@ export default function UserProfileEdit(): JSX.Element {
 
         if (process.env.PRIVATE_KEY != null) {
             const sdk = ThirdwebSDK.fromPrivateKey("devnet", process.env.PRIVATE_KEY);
-            const program = await sdk.getProgram("71ovBV2UHvEb5WStZU5mSvj4FjbYrSvGWz25wL1jQ1fa", "nft-collection");
+            const program = await sdk.getProgram("HjyuCUSUZ2VGkDJNw9QpJMXgNVfRJeaU5QFwyiLGZdpB", "nft-collection");
             
             const metadata = {
                 name: userName,
-                symbol: "CANDY",
+                symbol: "GLASS",
                 image: "https://bafybeiee7qg2rte7wlch47akx3zj2toj5wvbetiska3bqb2r2yjgjc3yky.ipfs.w3s.link/Buy%20Me.gif",
-                description: "NFT used to create profile in buy me a candy",
+                description: "NFT used to create profile in buy me a glass",
                 properties: [
                     {
                         name: "Profile",

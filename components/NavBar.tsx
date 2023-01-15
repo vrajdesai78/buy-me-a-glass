@@ -31,7 +31,7 @@ export const NavBar = () => {
                 py={4}
             >
                 <Flex alignItems="center" justifyContent="space-between" mx="auto">
-                    <Flex padding="1" border={'1px'} borderRadius="1em" onClick={() => {router.push('/')}} cursor={'pointer'} background="#dae3fb91">
+                    <Flex padding="1" border={'1px'} borderRadius="1em" onClick={() => {router.push('/')}} cursor={'pointer'} background="#dae3fb3b">
                         <Image src={logo} alt={'logo'} width={'50'}/>
                         <Text alignSelf={'center'} fontSize="md" fontWeight={'bold'} textColor="#260367" paddingEnd={'0.5em'}>Buy Me A Glass</Text>
                     </Flex>

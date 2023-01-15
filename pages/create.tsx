@@ -14,10 +14,9 @@ import {
     InputLeftAddon,
     Textarea,
     Box, 
-    Alert,
-    AlertIcon
+    useToast
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ThirdwebSDK } from "@thirdweb-dev/sdk/solana";
 import { useWallet } from '@solana/wallet-adapter-react';
 import { Web3Storage } from 'web3.storage';
@@ -81,9 +80,9 @@ export default function UserProfileEdit(): JSX.Element {
 
     const { publicKey } = useWallet();
 
+    const toast = useToast()
 
     async function mintNFT(): Promise<any> {
-
         if (userName == '' || name == '' || email == '') {            
             alert("Please fill in all required fields")
             return
@@ -91,12 +90,12 @@ export default function UserProfileEdit(): JSX.Element {
 
         if (process.env.PRIVATE_KEY != null) {
             const sdk = ThirdwebSDK.fromPrivateKey("devnet", process.env.PRIVATE_KEY);
-            const program = await sdk.getProgram("4mWbQ2wte2FbauiTQ3sNY681rxfNu8DZKWscrF7RJPEJ", "nft-collection");
+            const program = await sdk.getProgram("71ovBV2UHvEb5WStZU5mSvj4FjbYrSvGWz25wL1jQ1fa", "nft-collection");
             
             const metadata = {
                 name: userName,
                 symbol: "CANDY",
-                Image: 'https://bafybeiavgggc64ebnpayng3jmkhdwpgvuka2xus3dh5hnjmmls2ncblg3e.ipfs.w3s.link/Buy%20Me.png',
+                image: "https://bafybeiee7qg2rte7wlch47akx3zj2toj5wvbetiska3bqb2r2yjgjc3yky.ipfs.w3s.link/Buy%20Me.gif",
                 description: "NFT used to create profile in buy me a candy",
                 properties: [
                     {
@@ -130,7 +129,14 @@ export default function UserProfileEdit(): JSX.Element {
                 ]
             }
             if (publicKey != null) {
-                const mintAddress = await program.mintTo(publicKey.toBase58(), metadata);
+                await program.mintTo(publicKey.toBase58(), metadata);
+                toast({
+                    title: "Profile Created",
+                    description: "Your Profile has been created successfully",
+                    status: "success",
+                    duration: 9000,
+                    isClosable: true,
+                })
                 router.push('/'+userName)
             } else {
                 alert("Please connect your wallet")

@@ -15,15 +15,6 @@ import {
 import { NavBar } from "../components/NavBar";
 import { Footer } from "../components/Footer";
 
-// Default styles that can be overridden by your app
-require("@solana/wallet-adapter-react-ui/styles.css");
-
-const WalletMultiButtonDynamic = dynamic(
-  async () =>
-    (await import("@solana/wallet-adapter-react-ui")).WalletMultiButton,
-  { ssr: false }
-);
-
 const Home: NextPage = () => {
 
   const router = useRouter();
@@ -69,14 +60,14 @@ const Home: NextPage = () => {
   };
 
   return (
-    <Box bgGradient='linear(blue.300 0%, purple.300 35%, green.100 90%)' minHeight='100vh'>
-      <style jsx global>{`
+    <Box bgGradient='linear(blue.300 0%, purple.300 35%, green.100 90%)' minHeight='100vh' minWidth='100vw'>
+      <style jsx global>{` 
             html, body {
-                height: 100%;
-                width: 100%;
+              height: 100%;
+              max-width: 100%;
+              overflow-x: hidden;
             }
         `}</style>
-      {/* Wallet icon and button */}
       <NavBar />
       <Box px={8} py={12} mx="auto">
         <Box

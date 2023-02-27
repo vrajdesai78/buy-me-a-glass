@@ -1,15 +1,13 @@
-import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { ChakraProvider, extendTheme} from "@chakra-ui/react";
-import { ThirdwebProvider } from "@thirdweb-dev/react/solana";
-import { Network } from "@thirdweb-dev/sdk/solana";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import { ContextProvider } from "../contexts/ContextProvider";
+import { FC } from 'react';
 import type { AppProps } from "next/app";
-import "../styles/globals.css";
+require("@solana/wallet-adapter-react-ui/styles.css");
+require("../styles/globals.css");
 
 // Change the network to the one you want to use: "mainnet-beta", "testnet", "devnet", "localhost" or your own RPC endpoint
-const network: Network = "devnet";
 
-function MyApp({ Component, pageProps }: AppProps) {
-
+const App: FC<AppProps> = ({ Component, pageProps }) => {
   const colors = {
     brand: {
       900: "#1a365d",
@@ -19,16 +17,14 @@ function MyApp({ Component, pageProps }: AppProps) {
   };
 
   const theme = extendTheme({ colors });
-  
+
   return (
-    <ChakraProvider theme={theme}>
-      <ThirdwebProvider network={network}>
-        <WalletModalProvider>
+    <ContextProvider>
+      <ChakraProvider theme={theme}>
           <Component {...pageProps} />
-        </WalletModalProvider>
-      </ThirdwebProvider>
-    </ChakraProvider>
+      </ChakraProvider>
+    </ContextProvider>
   );
 }
 
-export default MyApp;
+export default App;

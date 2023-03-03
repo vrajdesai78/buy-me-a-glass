@@ -22,7 +22,16 @@ import { Web3Storage } from "web3.storage";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { ThirdwebSDK } from "@thirdweb-dev/sdk/solana";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import {
+  Program,
+  Idl,
+  AnchorProvider,
+  setProvider,
+} from "@project-serum/anchor";
+import { PublicKey } from "@solana/web3.js";
+import idl from "../utils/idl.json";
+import { programId } from "../utils/constants";
 
 export const MultiStepForm = () => {
   const [step, setStep] = useState(1);
@@ -36,6 +45,9 @@ export const MultiStepForm = () => {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [twitterUrl, setTwitterUrl] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
+  const [program, setProgram] = useState();
+  const [userPDA, setUserPDA] = useState<PublicKey | undefined>(undefined);
+  
 
   const [loading, setLoading] = useState(true);
 
@@ -60,74 +72,78 @@ export const MultiStepForm = () => {
     }
   };
 
-  const { publicKey } = useWallet();
+  const toast = useToast();
 
-  const toast = useToast()
+  const { connection } = useConnection();
+  const wallet = useAnchorWallet();
 
-  async function mintNFT(): Promise<any> {
-      if (userName == '' || name == '' || email == '') {            
-          alert("Please fill in all required fields")
-          return
-      }
+  useEffect(() => {
+    if (wallet) {
+      console.log("Wallet connected", wallet);
+      const provider = new AnchorProvider(
+        connection,
+        wallet as any,
+        AnchorProvider.defaultOptions()
+      );
+      setProvider(provider);
+      const program = new Program(idl as Idl, programId);
+      setProgram(program as any);
+    }
+  }, [wallet]);
 
-      if (process.env.PRIVATE_KEY != null) {
-          const sdk = ThirdwebSDK.fromPrivateKey("devnet", process.env.PRIVATE_KEY);
-          const program = await sdk.getProgram("HjyuCUSUZ2VGkDJNw9QpJMXgNVfRJeaU5QFwyiLGZdpB", "nft-collection");
-          
-          const metadata = {
-              name: userName,
-              symbol: "GLASS",
-              image: "https://bafybeiee7qg2rte7wlch47akx3zj2toj5wvbetiska3bqb2r2yjgjc3yky.ipfs.w3s.link/Buy%20Me.gif",
-              description: "NFT used to create profile in buy me a glass",
-              properties: [
-                  {
-                      name: "Profile",
-                      value: icon
-                  },
-                  {
-                      name: "Name",
-                      value: name
-                  },
-                  {
-                      name: "Bio",
-                      value: bio
-                  },
-                  {
-                      name: "Email",
-                      value: email
-                  },
-                  {
-                      name: "Linkedin",
-                      value: "https://" + linkedinUrl
-                  },
-                  {
-                      name: "Twitter",
-                      value: "https://" + twitterUrl
-                  },
-                  {
-                      name: "Github",
-                      value: "https://" + githubUrl
-                  }
-              ]
-          }
-          if (publicKey != null) {
-              await program.mintTo(publicKey.toBase58(), metadata);
-              toast({
-                  title: "Profile Created",
-                  description: "Your Profile has been created successfully",
-                  status: "success",
-                  duration: 9000,
-                  isClosable: true,
-              })
-              router.push('/'+userName)
-          } else {
-              alert("Please connect your wallet")
-              console.error("No public key found")
-          }
-      } else {
-          console.error("No private key found")
-      }
-  }
+
+  useEffect(() => {
+    const createPDA = async () => {
+      const [USER_PDA] = await PublicKey.findProgramAddressSync(
+        [Buffer.from("user"), Buffer.from(userName)],
+        programId
+      );
+      console.log("USER_PDA", USER_PDA.toBase58().toString());
+      console.log("wallet", wallet?.publicKey.toBase58().toString());
+      setUserPDA(USER_PDA);
+    };
+    createPDA();
+  }, [userName]);
+
+  const send = async () => {
+    const profile = {
+      profileImage: icon,
+      userName: userName,
+      name: name,
+      bio: bio,
+      email: email,
+      linkedinUrl: linkedinUrl,
+      twitterUrl: twitterUrl,
+      githubUrl: githubUrl,
+    };
+
+    if (process.env.ACCESS_TOKEN != null) {
+      const client = new Web3Storage({ token: process.env.ACCESS_TOKEN });
+      client
+        .put([new File([JSON.stringify(profile)], `${userName}.json`)])
+        .then(async (cid) => {
+          const transaction = await (program as any).methods
+            .createUser(name, cid)
+            .accounts({
+              userAccount: userPDA,
+              authority: wallet!.publicKey,
+            })
+            .rpc();
+          connection.confirmTransaction(transaction).then(() => {
+            toast({
+              title: "Profile Created",
+              description: "Your profile has been created successfully",
+              status: "success",
+              duration: 5000,
+              isClosable: true,
+            });
+          });
+          // router.push(`/${userName}`)
+        });
+    } else {
+      console.log("No access token");
+    }
+  };
 
   return (
     <>
@@ -433,7 +449,7 @@ export const MultiStepForm = () => {
                   _hover={{
                     bg: "blue.500",
                   }}
-                  onClick={mintNFT}
+                  onClick={send}
                 >
                   Create Profile
                 </Button>

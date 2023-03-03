@@ -1,24 +1,12 @@
 import {
     Flex,
     Stack,
-    Image,
-    Box,
-    Heading,
-    Container,
-    Text,
-    Button,
-    Icon,
-    useColorModeValue,
-    createIcon,
+    Box
   } from "@chakra-ui/react";
   import { NavBar } from "../components/NavBar";
   import { MultiStepForm } from "../components/MultiStepForm";
-  import Head from "next/head";
-  import { useRouter } from "next/router";
   
-  export default function SplitScreen() {
-    const router = useRouter();
-  
+  export default function SplitScreen() {  
     return (
         <Box bgGradient='linear(blue.300 0%, purple.300 35%, green.100 90%)'>
         <style jsx global>{`

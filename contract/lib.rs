@@ -2,34 +2,45 @@ use anchor_lang::prelude::*;
 
 // This is your program's public key and it will update
 // automatically when you build the project.
-declare_id!("8McHBd1EVgVySm4GwZt6tkPMqmExGcQMGv8ge26B5Mo");
+declare_id!("7eYVtQu6nLuQ71TfteRaPQojza5wHmxYwkwJssHdKj9s");
 
 #[program]
-mod UserDetails {
+mod user_details {
     use super::*;
-    pub fn initialize(ctx: Context<Initialize>, data: String) -> Result<()> {
-        ctx.accounts.new_account.data = data.clone();
-        msg!("Changed data to: {}!", data); // Message will show up in the tx logs
+    pub fn create_user(ctx: Context<InitUser>, name: String, cid: String) -> Result<()> {
+        let user_account = &mut ctx.accounts.user_account;
+        let authority = &mut ctx.accounts.authority;
+
+        user_account.name = name;
+        user_account.cid = cid;
+        user_account.key = authority.key();
+
         Ok(())
     }
 }
 
 #[derive(Accounts)]
-pub struct Initialize<'info> {
-    // We must specify the space in order to initialize an account.
-    // First 8 bytes are default account discriminator,
-    // next 8 bytes come from NewAccount.data being type u64.
-    // (u64 = 64 bits unsigned integer = 8 bytes)
-    #[account(init, payer = signer, space = 32 + 32)]
-    pub new_account: Account<'info, NewAccount>,
+#[instruction(name: String)]
+pub struct InitUser<'info> {
+    #[account(
+        init, 
+        seeds = [b"user", name.as_bytes().as_ref()],
+        bump, 
+        payer = authority,
+        space = 2344 + 8
+    )]
+    pub user_account: Account<'info, UserAccount>,
+
     #[account(mut)]
-    pub signer: Signer<'info>,
+    pub authority: Signer<'info>,
+
     pub system_program: Program<'info, System>,
 }
 
 #[account]
-pub struct NewAccount {
+#[derive(Default)]
+pub struct UserAccount {
     name: String,
     cid: String,
-    key: Pubkey
+    key: Pubkey,
 }

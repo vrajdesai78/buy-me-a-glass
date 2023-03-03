@@ -9,38 +9,27 @@ import {
 } from "@project-serum/anchor";
 import { PublicKey, sendAndConfirmTransaction } from "@solana/web3.js";
 import idl from "../utils/idl.json";
+import * as Web3 from "@solana/web3.js";
+import { programId } from "../utils/constants";
 
 export default function transaction() {
   const { connection } = useConnection();
   const wallet = useAnchorWallet();
   const [userPDA, setUserPDA] = React.useState<PublicKey | undefined>(undefined);
 
-  useEffect(() => {
-    if (wallet) {
-        console.log("Wallet connected", wallet);
-        const provider = new AnchorProvider(connection, (wallet as any), AnchorProvider.defaultOptions());
-        setProvider(provider);
-    }
-    }, [wallet]);
-
-  const programId = new PublicKey(
-    "8McHBd1EVgVySm4GwZt6tkPMqmExGcQMGv8ge26B5Mo"
-  );
 
   const send = async () => {
-    const [USER_PDA] = await PublicKey.findProgramAddressSync(
-      [Buffer.from("user"), Buffer.from("hello")],
-      programId
-    );
+    const url = "https://api.devnet.solana.com";
+  
+  const [addr] = Web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("user"), Buffer.from("cool")],
+    programId
+  )
+  
+  const program = new Program(idl as Idl, programId);
+  const parsedData = await program.account;
 
-    const program = new Program(idl as Idl, programId);
-
-    const transaction = await program.methods
-      .createUser("hello", "testcid")
-      .accounts({ userAccount: USER_PDA, authority: wallet!.publicKey })
-      .rpc();
-      await connection.confirmTransaction(transaction);
-      console.log("Transaction confirmed", transaction);
+  console.log(parsedData)
   };
   return (
     <>

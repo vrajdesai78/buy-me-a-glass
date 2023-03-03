@@ -17,6 +17,7 @@ import {
   NumberIncrementStepper,
   NumberDecrementStepper,
   Icon,
+  useToast,
 } from "@chakra-ui/react";
 import { MdEmail } from "react-icons/md";
 import { ThirdwebSDK } from "@thirdweb-dev/sdk/solana";
@@ -25,37 +26,42 @@ import { IconType } from "react-icons";
 import * as Web3 from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { NavBar } from "../components/NavBar";
-import { Footer } from "../components/Footer";
+import { programId } from "../utils/constants";
+import { Program, Idl } from "@project-serum/anchor";
+import idl from "../utils/idl.json";
+
+interface UserAccount {
+  profileImage: string;
+  userName: string;
+  name: string;
+  bio: string;
+  email: string;
+  linkedinUrl: string;
+  githubUrl: string;
+  twitterUrl: string;
+  address: Web3.PublicKey;
+}
 
 export const getServerSideProps = async (context: any) => {
   const username = context.query.username;
-  if (!process.env.PRIVATE_KEY) {
-    return {
-      notFound: true,
-    };
-  }
-  try {
-    const sdk = ThirdwebSDK.fromPrivateKey("devnet", process.env.PRIVATE_KEY!);
-    const program = await sdk.getProgram(
-      "HjyuCUSUZ2VGkDJNw9QpJMXgNVfRJeaU5QFwyiLGZdpB",
-      "nft-collection"
-    );
-    const nfts = await program.getAll();
-    const userNfts = nfts.find((nft) => nft.metadata.name === username);
-    if (!userNfts) {
-      return {
-        notFound: true,
-      };
-    }
-    const userData = JSON.stringify(userNfts!.metadata!.properties);
-    var parsedData = JSON.parse(userData);
-    parsedData.push({ key: "creatorsAddress", value: userNfts!.owner });
-  } catch (error) {
-    console.error(error);
-  }
+
+  const [addr] = Web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("user"), Buffer.from(username)],
+    programId
+  );
+
+  const program = new Program(idl as Idl, programId);
+  const userData = await program.account.userAccount.fetch(addr);
+
+  const link = `https://${userData.cid}.ipfs.w3s.link/${username}.json`;
+  const response = await fetch(link);
+  const parsedData: UserAccount = await response.json();
 
   return {
-    props: { parsedData: parsedData },
+    // Return two props to the page component
+    props: {
+      parsedData,
+    },
   };
 };
 
@@ -99,11 +105,7 @@ export const socialLinkComponent = (
   );
 };
 
-const User = ({
-  parsedData,
-}: {
-  parsedData: Array<{ [key: string]: string }>;
-}) => {
+const User = ({ parsedData }: { parsedData: UserAccount }) => {
   const router = useRouter();
   const { username } = router.query;
   const [icon, setIcon] = useState("");
@@ -113,19 +115,23 @@ const User = ({
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [twitterUrl, setTwitterUrl] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
-  const [creatorsAddress, setCreatorsAddress] = useState("");
+  const [creatorsAddress, setCreatorsAddress] = useState<
+    Web3.PublicKey | undefined
+  >(undefined);
+
+  const toast = useToast();
 
   useEffect(() => {
     console.log(parsedData);
     try {
-      setIcon(parsedData[0].value);
-      setName(parsedData[1].value);
-      setBio(parsedData[2].value);
-      setEmail(parsedData[3].value);
-      setLinkedinUrl(parsedData[4].value);
-      setTwitterUrl(parsedData[5].value);
-      setGithubUrl(parsedData[6].value);
-      setCreatorsAddress(parsedData[7].value);
+      setIcon(parsedData.profileImage);
+      setName(parsedData.name);
+      setBio(parsedData.bio);
+      setEmail(parsedData.email);
+      setLinkedinUrl(`https://${parsedData.linkedinUrl}`);
+      setTwitterUrl(`https://${parsedData.twitterUrl}`);
+      setGithubUrl(`https://${parsedData.githubUrl}`);
+      setCreatorsAddress(parsedData.address);
     } catch (error) {
       console.error(error);
     }
@@ -142,6 +148,7 @@ const User = ({
   };
 
   const sendSol = async (event: React.ChangeEvent<HTMLFormElement>) => {
+    console.log(creatorsAddress);
     event.preventDefault();
     if (!connection || !publicKey || !creatorsAddress) {
       return;
@@ -159,7 +166,13 @@ const User = ({
     transaction.recentBlockhash = latestBlockhash.blockhash;
 
     sendTransaction(transaction, connection).then((sig) => {
-      setTxSig(sig);
+      toast({
+        title: "Transaction sent.",
+        description: "Check the transaction on Solana Explorer.",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
     });
   };
 
@@ -287,8 +300,8 @@ const User = ({
         textAlign="center"
         fontWeight={"bold"}
         width={"100%"}
-        position='absolute'
-        bottom={'0'}
+        position="absolute"
+        bottom={"0"}
       >
         Made with ❤️ by Vraj Desai
       </Text>{" "}

@@ -1,9 +1,6 @@
 {
   "version": "0.1.0",
   "name": "user_details",
-  "constants": [
-    { "name": "USER_SEED", "type": "bytes", "value": "[117, 115, 101, 114]" }
-  ],
   "instructions": [
     {
       "name": "createUser",

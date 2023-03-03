@@ -21,7 +21,6 @@ import {
 import { Web3Storage } from "web3.storage";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useWallet } from "@solana/wallet-adapter-react";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
   Program,
@@ -95,11 +94,9 @@ export const MultiStepForm = () => {
   useEffect(() => {
     const createPDA = async () => {
       const [USER_PDA] = await PublicKey.findProgramAddressSync(
-        [Buffer.from("user"), Buffer.from(userName)],
+        [Buffer.from("user"), Buffer.from(userName.toString())],
         programId
       );
-      console.log("USER_PDA", USER_PDA.toBase58().toString());
-      console.log("wallet", wallet?.publicKey.toBase58().toString());
       setUserPDA(USER_PDA);
     };
     createPDA();
@@ -115,6 +112,7 @@ export const MultiStepForm = () => {
       linkedinUrl: linkedinUrl,
       twitterUrl: twitterUrl,
       githubUrl: githubUrl,
+      address: wallet?.publicKey
     };
 
     if (process.env.ACCESS_TOKEN != null) {
@@ -123,7 +121,7 @@ export const MultiStepForm = () => {
         .put([new File([JSON.stringify(profile)], `${userName}.json`)])
         .then(async (cid) => {
           const transaction = await (program as any).methods
-            .createUser(name, cid)
+            .createUser(userName, cid)
             .accounts({
               userAccount: userPDA,
               authority: wallet!.publicKey,

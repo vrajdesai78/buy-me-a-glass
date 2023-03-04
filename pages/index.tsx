@@ -176,7 +176,7 @@ const Home: NextPage = () => {
                 mx={{ lg: "auto" }}
                 color="gray.200"
               >
-                Create your on-chain profile on Solana, on creating profile NFT will be minted to your wallet and you will receive SOL in your wallet.
+                Create your on-chain profile on Solana, share it with your audience and get donations in SOL directly in your wallet.
               </chakra.p>
             </Box>
 
@@ -200,7 +200,7 @@ const Home: NextPage = () => {
                     />
                   }
                 >
-                  All your personal data including social media links will be stored inside the NFT which will be minted to your wallet. So no one can modify your data. 
+                  All your personal data including social media links will be stored on-chain in Solana Blockchain. So no one can modify your data. 
                 </Feature>
 
                 <Feature
@@ -214,7 +214,7 @@ const Home: NextPage = () => {
                     />
                   }
                 >
-                  Create your profile for free, you don&apos;t need to pay any fees to create your profile. Even the NFT which will be minted to your address is free.
+                  Create your profile for free, you don&apos;t need to pay any fees to create your profile. You just have to minimal amount of SOL to pay for the transaction fees.
                 </Feature>
 
                 <Feature
@@ -242,7 +242,7 @@ const Home: NextPage = () => {
                     />
                   }
                 >
-                  No central authority is involved in the process, all the transactions are peer to peer and all data is stored inside an NFT which is owned by you. 
+                  No central authority is involved in the process, all the transactions are peer to peer and all data is stored on-chain which is owned by you. 
                 </Feature>
               </Stack>
             </Box>

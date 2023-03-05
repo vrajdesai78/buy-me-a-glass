@@ -27,8 +27,13 @@ import * as Web3 from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { NavBar } from "../components/NavBar";
 import { programId } from "../utils/constants";
-import { Program, Idl } from "@project-serum/anchor";
 import idl from "../utils/idl.json";
+import {
+  Program,
+  Idl,
+  AnchorProvider,
+  setProvider,
+} from "@project-serum/anchor";
 
 interface UserAccount {
   profileImage: string;
@@ -44,6 +49,17 @@ interface UserAccount {
 
 export const getServerSideProps = async (context: any) => {
   const username = context.query.username;
+
+  const wallet = Web3.Keypair.generate();
+  const connection = new Web3.Connection('https://api.devnet.solana.com', 'confirmed');
+
+  const provider = new AnchorProvider(
+    connection,
+    wallet as any,
+    AnchorProvider.defaultOptions()
+  );
+
+  setProvider(provider);
 
   const [addr] = Web3.PublicKey.findProgramAddressSync(
     [Buffer.from("user"), Buffer.from(username)],

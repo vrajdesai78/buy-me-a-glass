@@ -1,6 +1,6 @@
 # Buy Me A Glass
 
-Anyone can create their micro page of their profile on Buy Me A Glass. It's a simple way to share your profile with others. When user creates a new profile an NFT will be minted on the user's connected wallet. This NFT will be minted on Solana blockchain and user don't have to pay any gas fees to mint the NFT. The NFT will be minted on Buy Me A Glass NFT collection.
+Anyone can create their micro page of their profile on Buy Me A Glass. It's a simple way to share your profile with others. When user creates a new profile an NFT will be minted on the user's connected wallet. This NFT will be minted on Solana blockchain and user don't have to pay any gas fees to mint the NFT. 
 
 ![Screenshot 2023-01-15 at 10 47 56 PM](https://user-images.githubusercontent.com/43074241/212558653-b28761e8-04e6-43ef-89d3-1773beca776b.png)
 

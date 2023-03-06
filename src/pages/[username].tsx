@@ -33,6 +33,7 @@ import {
   AnchorProvider,
   setProvider,
 } from "@project-serum/anchor";
+import { getProgram, getUserAccountPk } from "../utils/program";
 
 interface UserAccount {
   profileImage: string;
@@ -55,23 +56,9 @@ export const getServerSideProps = async (context: any) => {
     "confirmed"
   );
 
-  const provider = new AnchorProvider(
-    connection,
-    wallet as any,
-    AnchorProvider.defaultOptions()
-  );
-
-  setProvider(provider);
-
-  const [addr] = Web3.PublicKey.findProgramAddressSync(
-    [Buffer.from("user"), Buffer.from(username)],
-    programId
-  );
-
   try {
-    const program = new Program(idl as Idl, programId);
-    const userData = await program.account.userAccount.fetch(addr);
-
+    const program = getProgram(connection, wallet);
+    const userData = await program.account.userAccount.fetch(getUserAccountPk(username));
     const link = `https://${userData.cid}.ipfs.w3s.link/${username}.json`;
     const response = await fetch(link);
     const parsedData: UserAccount = await response.json();
@@ -146,7 +133,6 @@ const User = ({ parsedData }: { parsedData: UserAccount }) => {
   const toast = useToast();
 
   useEffect(() => {
-    console.log(parsedData);
     try {
       setIcon(parsedData.profileImage);
       setName(parsedData.name);
@@ -172,7 +158,6 @@ const User = ({ parsedData }: { parsedData: UserAccount }) => {
   };
 
   const sendSol = async (event: React.ChangeEvent<HTMLFormElement>) => {
-    console.log(creatorsAddress);
     event.preventDefault();
     if (!connection || !publicKey || !creatorsAddress) {
       return;

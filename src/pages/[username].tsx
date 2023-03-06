@@ -56,7 +56,6 @@ export const getServerSideProps = async (context: any) => {
     const parsedData: UserAccount = await response.json();
 
     return {
-      // Return two props to the page component
       props: {
         parsedData,
       },

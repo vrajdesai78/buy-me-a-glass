@@ -38,4 +38,7 @@ Install the dependencies.
 ## Running the app
      
     npm run dev or yarn dev
-  
+    
+## Installing Phantom Wallet
+You can install Phantom Wallet from [here](https://phantom.app/download)
+

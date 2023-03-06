@@ -2,14 +2,8 @@ import { WalletAdapterNetwork, WalletError } from '@solana/wallet-adapter-base';
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';
 import {
     PhantomWalletAdapter,
-    SolflareWalletAdapter,
-    SolletExtensionWalletAdapter,
-    SolletWalletAdapter,
-    TorusWalletAdapter,
-    // LedgerWalletAdapter,
-    // SlopeWalletAdapter,
 } from '@solana/wallet-adapter-wallets';
-import { Cluster, clusterApiUrl } from '@solana/web3.js';
+import { clusterApiUrl } from '@solana/web3.js';
 import { FC, ReactNode, useCallback, useMemo } from 'react';
 import { AutoConnectProvider, useAutoConnect } from './AutoConnectProvider';
 import { NetworkConfigurationProvider, useNetworkConfiguration } from './NetworkConfigurationProvider';
@@ -32,12 +26,6 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const wallets = useMemo(
         () => [
             new PhantomWalletAdapter(),
-            new SolflareWalletAdapter(),
-            new SolletWalletAdapter({ network }),
-            new SolletExtensionWalletAdapter({ network }),
-            new TorusWalletAdapter(),
-            // new LedgerWalletAdapter(),
-            // new SlopeWalletAdapter(),
         ],
         [network]
     );
@@ -50,7 +38,6 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
     );
 
     return (
-        // TODO: updates needed for updating and referencing endpoint: wallet adapter rework
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} onError={onError} autoConnect={autoConnect}>
                 <ReactUIWalletModalProviderDynamic>

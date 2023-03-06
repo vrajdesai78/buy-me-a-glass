@@ -20,7 +20,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { MdEmail } from "react-icons/md";
-import { ThirdwebSDK } from "@thirdweb-dev/sdk/solana";
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 import { IconType } from "react-icons";
 import * as Web3 from "@solana/web3.js";
@@ -51,7 +50,10 @@ export const getServerSideProps = async (context: any) => {
   const username = context.query.username;
 
   const wallet = Web3.Keypair.generate();
-  const connection = new Web3.Connection('https://api.devnet.solana.com', 'confirmed');
+  const connection = new Web3.Connection(
+    "https://api.devnet.solana.com",
+    "confirmed"
+  );
 
   const provider = new AnchorProvider(
     connection,
@@ -66,19 +68,25 @@ export const getServerSideProps = async (context: any) => {
     programId
   );
 
-  const program = new Program(idl as Idl, programId);
-  const userData = await program.account.userAccount.fetch(addr);
+  try {
+    const program = new Program(idl as Idl, programId);
+    const userData = await program.account.userAccount.fetch(addr);
 
-  const link = `https://${userData.cid}.ipfs.w3s.link/${username}.json`;
-  const response = await fetch(link);
-  const parsedData: UserAccount = await response.json();
+    const link = `https://${userData.cid}.ipfs.w3s.link/${username}.json`;
+    const response = await fetch(link);
+    const parsedData: UserAccount = await response.json();
 
-  return {
-    // Return two props to the page component
-    props: {
-      parsedData,
-    },
-  };
+    return {
+      // Return two props to the page component
+      props: {
+        parsedData,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
 };
 
 export const socialLinkComponent = (

@@ -24,13 +24,9 @@ import { useRouter } from "next/router";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
   Program,
-  Idl,
-  AnchorProvider,
-  setProvider,
 } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
-import idl from "../utils/idl.json";
-import { programId } from "../utils/constants";
+import { getProgram, getUserAccountPk } from "../utils/program";
 
 export const MultiStepForm = () => {
   const [step, setStep] = useState(1);
@@ -44,7 +40,7 @@ export const MultiStepForm = () => {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [twitterUrl, setTwitterUrl] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
-  const [program, setProgram] = useState();
+  const [program, setProgram] = useState<Program | undefined>();
   const [userPDA, setUserPDA] = useState<PublicKey | undefined>(undefined);
   
 
@@ -78,28 +74,13 @@ export const MultiStepForm = () => {
 
   useEffect(() => {
     if (wallet) {
-      console.log("Wallet connected", wallet);
-      const provider = new AnchorProvider(
-        connection,
-        wallet as any,
-        AnchorProvider.defaultOptions()
-      );
-      setProvider(provider);
-      const program = new Program(idl as Idl, programId);
-      setProgram(program as any);
+      setProgram(getProgram(connection, wallet));
     }
   }, [wallet]);
 
 
   useEffect(() => {
-    const createPDA = async () => {
-      const [USER_PDA] = await PublicKey.findProgramAddressSync(
-        [Buffer.from("user"), Buffer.from(userName.toString())],
-        programId
-      );
-      setUserPDA(USER_PDA);
-    };
-    createPDA();
+      setUserPDA(getUserAccountPk(userName));;
   }, [userName]);
 
   const send = async () => {
@@ -136,7 +117,7 @@ export const MultiStepForm = () => {
               isClosable: true,
             });
           });
-          // router.push(`/${userName}`)
+          router.push(`/${userName}`)
         });
     } else {
       console.log("No access token");

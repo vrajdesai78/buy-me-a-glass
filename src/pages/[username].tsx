@@ -25,14 +25,6 @@ import { IconType } from "react-icons";
 import * as Web3 from "@solana/web3.js";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { NavBar } from "../components/NavBar";
-import { programId } from "../utils/constants";
-import idl from "../utils/idl.json";
-import {
-  Program,
-  Idl,
-  AnchorProvider,
-  setProvider,
-} from "@project-serum/anchor";
 import { getProgram, getUserAccountPk } from "../utils/program";
 
 interface UserAccount {
@@ -59,7 +51,7 @@ export const getServerSideProps = async (context: any) => {
   try {
     const program = getProgram(connection, wallet);
     const userData = await program.account.userAccount.fetch(getUserAccountPk(username));
-    const link = `https://${userData.cid}.ipfs.w3s.link/${username}.json`;
+    const link = `https://${(userData as any).cid}.ipfs.w3s.link/${username}.json`;
     const response = await fetch(link);
     const parsedData: UserAccount = await response.json();
 
